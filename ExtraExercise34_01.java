@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class ExtraExercise34_01 extends JFrame {
 
-    // Text fields for each piece of data
+    // fields for all the data we need
     private JTextField tfID = new JTextField(9);
     private JTextField tfLastName = new JTextField(15);
     private JTextField tfFirstName = new JTextField(15);
@@ -14,21 +14,21 @@ public class ExtraExercise34_01 extends JFrame {
     private JTextField tfState = new JTextField(2);
     private JTextField tfTelephone = new JTextField(10);
 
-    private JLabel lblStatus = new JLabel(" "); // shows messages like "Record not found"
+    private JLabel lblStatus = new JLabel(" "); // for error/success messages
 
-    // Database connection info - change these to match your setup!
+    // update these before running
     private static final String DB_URL = "jdbc:mysql://localhost/your_database_name";
     private static final String USER = "your_username";
     private static final String PASS = "your_password";
 
     public ExtraExercise34_01() {
-        // --- Build the layout ---
+        // setting up the form
         JPanel formPanel = new JPanel(new GridLayout(0, 2, 5, 5));
 
         formPanel.add(new JLabel("ID"));
         formPanel.add(tfID);
 
-        // Last Name + First Name + MI on the same "row" visually
+        // grouping name fields together
         formPanel.add(new JLabel("Last Name"));
         JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         namePanel.add(tfLastName);
@@ -51,7 +51,7 @@ public class ExtraExercise34_01 extends JFrame {
         formPanel.add(new JLabel("Telephone"));
         formPanel.add(tfTelephone);
 
-        // --- Button panel ---
+        // buttons
         JPanel buttonPanel = new JPanel();
         JButton btnView   = new JButton("View");
         JButton btnInsert = new JButton("Insert");
@@ -63,13 +63,11 @@ public class ExtraExercise34_01 extends JFrame {
         buttonPanel.add(btnUpdate);
         buttonPanel.add(btnClear);
 
-        // --- Put it all together ---
         setLayout(new BorderLayout(5, 5));
         add(lblStatus, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // --- Button actions ---
         btnView.addActionListener(e -> viewRecord());
         btnInsert.addActionListener(e -> insertRecord());
         btnUpdate.addActionListener(e -> updateRecord());
@@ -82,12 +80,12 @@ public class ExtraExercise34_01 extends JFrame {
         setVisible(true);
     }
 
-    // ---- Helper: get a database connection ----
+    // connects to the database
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, USER, PASS);
     }
 
-    // ---- VIEW: look up a record by ID ----
+    // looks up a record using the ID field
     private void viewRecord() {
         String id = tfID.getText().trim();
         try (Connection conn = getConnection();
@@ -98,7 +96,6 @@ public class ExtraExercise34_01 extends JFrame {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // Fill in all the fields with data from the database
                 tfLastName.setText(rs.getString("lastName"));
                 tfFirstName.setText(rs.getString("firstName"));
                 tfMI.setText(rs.getString("mi"));
@@ -106,7 +103,7 @@ public class ExtraExercise34_01 extends JFrame {
                 tfCity.setText(rs.getString("city"));
                 tfState.setText(rs.getString("state"));
                 tfTelephone.setText(rs.getString("telephone"));
-                lblStatus.setText(" "); // clear any old message
+                lblStatus.setText(" ");
             } else {
                 lblStatus.setText("Record not found");
             }
@@ -116,7 +113,7 @@ public class ExtraExercise34_01 extends JFrame {
         }
     }
 
-    // ---- INSERT: add a new record ----
+    // adds a new record to the table
     private void insertRecord() {
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(
@@ -139,7 +136,7 @@ public class ExtraExercise34_01 extends JFrame {
         }
     }
 
-    // ---- UPDATE: change an existing record ----
+    // updates an existing record, matches by ID
     private void updateRecord() {
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(
@@ -163,7 +160,7 @@ public class ExtraExercise34_01 extends JFrame {
         }
     }
 
-    // ---- CLEAR: empty all fields ----
+    // just clears everything out
     private void clearFields() {
         tfID.setText("");
         tfLastName.setText("");
